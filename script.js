@@ -2,16 +2,18 @@
 
 // Variables
 const overlay = document.querySelector('.overlay');
+const modal = document.querySelector('.modal');
 const btnCloseModal = document.querySelector('.btn--close-modal');
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
 const btnScrollTo = document.querySelector(`.btn--scroll-to`);
 const section1 = document.querySelector(`#section--1`);
+const tabs = document.querySelectorAll(`.operations__tab`);
+const tabsContainer = document.querySelector(`.operations__tab-container`);
+const tabsContent = document.querySelectorAll(`.operations__content`);
+const nav = document.querySelector(`.nav`);
 
 ///////////////////////////////////////
 // Modal window
-
-const modal = document.querySelector('.modal');
-
 const openModal = function (e) {
   e.preventDefault();
   modal.classList.remove('hidden');
@@ -46,17 +48,16 @@ btnScrollTo.addEventListener(`click`, function (e) {
 document.querySelector(`.nav__links`).addEventListener(`click`, function (e) {
   e.preventDefault();
 
-  if (e.target.classList.contains(`nav__link`)) {
+  if (
+    e.target.classList.contains(`nav__link`) &&
+    !e.target.classList.contains(`nav__link--btn`)
+  ) {
     const id = e.target.getAttribute(`href`);
     document.querySelector(id).scrollIntoView({ behavior: `smooth` });
   }
 });
 
 // Tabbed component
-const tabs = document.querySelectorAll(`.operations__tab`);
-const tabsContainer = document.querySelector(`.operations__tab-container`);
-const tabsContent = document.querySelectorAll(`.operations__content`);
-
 tabsContainer.addEventListener(`click`, function (e) {
   const clicked = e.target.closest(`.operations__tab`);
 
@@ -75,3 +76,19 @@ tabsContainer.addEventListener(`click`, function (e) {
     .querySelector(`.operations__content--${clicked.dataset.tab}`)
     .classList.add(`operations__content--active`);
 });
+
+// Menu fade animation
+const handleHover = function (e) {
+  const navLink = e.target.closest('.nav__link');
+  if (!navLink) return;
+
+  const siblings = nav.querySelectorAll('.nav__link');
+  const logo = nav.querySelector('img');
+
+  siblings.forEach(el => {
+    if (el !== navLink) el.style.opacity = this;
+  });
+  logo.style.opacity = this;
+};
+nav.addEventListener(`mouseover`, handleHover.bind(0.5));
+nav.addEventListener(`mouseout`, handleHover.bind(1));
