@@ -11,6 +11,7 @@ const tabs = document.querySelectorAll(`.operations__tab`);
 const tabsContainer = document.querySelector(`.operations__tab-container`);
 const tabsContent = document.querySelectorAll(`.operations__content`);
 const nav = document.querySelector(`.nav`);
+const header = document.querySelector(`.header`);
 
 ///////////////////////////////////////
 // Modal window
@@ -25,9 +26,9 @@ const closeModal = function () {
   overlay.classList.add('hidden');
 };
 
-btnsOpenModal.forEach(btn => {
+for (const btn of btnsOpenModal) {
   btn.addEventListener('click', openModal);
-});
+}
 
 btnCloseModal.addEventListener('click', closeModal);
 overlay.addEventListener('click', closeModal);
@@ -65,8 +66,12 @@ tabsContainer.addEventListener(`click`, function (e) {
   if (!clicked) return;
 
   // Remove active classes
-  tabs.forEach(t => t.classList.remove(`operations__tab--active`));
-  tabsContent.forEach(t => t.classList.remove(`operations__content--active`));
+  for (const t of tabs) {
+    t.classList.remove('operations__tab--active');
+  }
+  for (const t of tabsContent) {
+    t.classList.remove('operations__content--active');
+  }
 
   // Active tab
   clicked.classList.add(`operations__tab--active`);
@@ -85,10 +90,51 @@ const handleHover = function (e) {
   const siblings = nav.querySelectorAll('.nav__link');
   const logo = nav.querySelector('img');
 
-  siblings.forEach(el => {
+  for (const el of siblings) {
     if (el !== navLink) el.style.opacity = this;
-  });
+  }
+
   logo.style.opacity = this;
 };
 nav.addEventListener(`mouseover`, handleHover.bind(0.5));
 nav.addEventListener(`mouseout`, handleHover.bind(1));
+
+// Sticky navigation
+const navHeight = nav.getBoundingClientRect().height;
+
+const stickyNav = function (entries) {
+  const [entry] = entries;
+
+  if (entry.isIntersecting) nav.classList.remove(`sticky`);
+  else nav.classList.add(`sticky`);
+};
+
+const headerObserver = new IntersectionObserver(stickyNav, {
+  root: null,
+  threshold: 0,
+  rootMargin: `-${navHeight}px`,
+});
+
+headerObserver.observe(header);
+
+// Reveal sections
+const allSections = document.querySelectorAll(`.section`);
+
+const revealSection = function (entries, observer) {
+  const [entry] = entries;
+
+  if (!entry.isIntersecting) return;
+  entry.target.classList.remove(`section--hidden`);
+  observer.unobserve(entry.target);
+};
+
+const sectionObserver = new IntersectionObserver(revealSection, {
+  root: null,
+  threshold: 0.15,
+});
+
+// Use for-of loop instead of forEach
+for (const section of allSections) {
+  sectionObserver.observe(section);
+  section.classList.add('section--hidden');
+}
